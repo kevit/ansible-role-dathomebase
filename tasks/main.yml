@@ -1,0 +1,42 @@
+---
+- name: Add the user
+  user:
+    name: homebase
+    shell: /usr/bin/nologin
+    home: /srv/homebase
+    create_home: true
+
+- name: Create data directory
+  file:
+    path: /srv/homebase/data
+    owner: homebase
+    group: root
+    state: directory
+
+- name: Install  node.js packages
+  npm:
+    name: "{{ item }}"
+    path: /srv/homebase
+  loop:
+    - "dat"
+    - "@beaker/homebase"
+
+- name: Configure homebase
+  template:
+    src: homebase.yml.j2
+    dest: "/srv/homebase/.homebase.yml"
+    
+- name: Configure systemd service
+  template:
+    src: homebase.service.j2
+    dest: "/etc/systemd/system/homebase.service"
+
+- name: just force systemd to reread configs (2.4 and above)
+  systemd:
+    daemon_reload: yes
+
+- name: reload service homebase
+  become: true
+  systemd:
+    name: homebase
+    state: reloaded

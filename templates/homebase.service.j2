@@ -1,0 +1,18 @@
+[Unit]
+Description=homebase
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env /srv/homebase/node_modules/.bin/homebase
+WorkingDirectory=/srv/homebase
+Restart=on-failure
+StandardInput=null
+StandardOutput=syslog
+StandardError=syslog
+Restart=always
+SyslogIdentifier=homebase
+User=homebase
+Group=root
+
+[Install]
+WantedBy=multi-user.target
